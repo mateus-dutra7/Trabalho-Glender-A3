@@ -12,34 +12,38 @@ import java.util.Random;
 public class CartelaBingo {
    private int id;
     private ArrayList<Integer> numeros;
-    private double preco;
+    private int marcados; 
+    private double preco = 10.0;
+    private String donoCpf;
 
-    public CartelaBingo(int id) {
+    public CartelaBingo(int id, String cpf) {
         this.id = id;
-        this.preco = 10.0; 
+        this.donoCpf = cpf;
         this.numeros = new ArrayList<>();
-        gerarNumerosAleatorios();
+        this.marcados = 0;
+        gerarNumeros();
     }
 
-    private void gerarNumerosAleatorios() {
+    private void gerarNumeros() {
         Random rand = new Random();
         while (numeros.size() < 5) {
-            int num = rand.nextInt(50) + 1;
-            if (!numeros.contains(num)) {
-                numeros.add(num);
-            }
+            int n = rand.nextInt(50) + 1;
+            if (!numeros.contains(n)) numeros.add(n);
         }
     }
 
-    public void exibirCartela() {
-        System.out.print("Cartela ID " + id + " -> Numeros: ");
-        for (int num : numeros) {
-            System.out.print("[" + num + "] ");
+    public void conferirNumero(int sorteado) {
+        if (numeros.contains(sorteado)) {
+            marcados++;
         }
-        System.out.println();
     }
 
-    public int getId() { return id; }
+    public boolean completou() { return marcados == 5; }
+
+    public void exibir() {
+        System.out.println("Cartela ID: " + id + " | Dono CPF: " + donoCpf + " | Numeros: " + numeros);
+    }
+
     public double getPreco() { return preco; }
-    public ArrayList<Integer> getNumeros() { return numeros; }
+    public String getDonoCpf() { return donoCpf; }
 }

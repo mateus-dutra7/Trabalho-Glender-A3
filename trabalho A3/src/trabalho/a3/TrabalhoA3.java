@@ -4,137 +4,144 @@
  */
 package trabalho.a3;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
-
 /**
  *
  * @author mateu
  */
 public class TrabalhoA3 {
 private static ArrayList<Cliente> listaClientes = new ArrayList<>();
-    private static ArrayList<CartelaBingo> listaCartelasContratadas = new ArrayList<>();
-    private static double caixaDoBingo = 0.0;
-    private static int contadorCartela = 1;
+    private static ArrayList<CartelaBingo> cartelasVendidas = new ArrayList<>();
+    
+    // GESTÃO FINANCEIRA GLOBAL E DIÁRIA
+    private static double totalVendas = 0;
+    private static double totalPremiosPagos = 0;
+    private static double saldoDoDia = 0; // <-- NOVA VARIÁVEL ACRESCENTADA
+    private static double valorPremioRodada = 50.0;
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       Scanner scanner = new Scanner(System.in);
+      Scanner sc = new Scanner(System.in);
         int opcao = 0;
 
-        // Dados iniciais para testar rápido
-        listaClientes.add(new Cliente("Joao Silva", "123", 50.0));
+        
 
         do {
-            System.out.println("\n--- SISTEMA DE BINGO ---");
-            System.out.println("1 - Cadastrar Cliente");
-            System.out.println("2 - Consultar Clientes");
-            System.out.println("3 - Editar Cliente");
-            System.out.println("4 - Excluir Cliente");
-            System.out.println("5 - Comprar Cartela (Contratar Servico)");
-            System.out.println("6 - Ver Caixa do Sistema (Gestao Financeira)");
-            System.out.println("7 - Sair");
-            System.out.print("Escolha uma opcao: ");
-            opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpar buffer
+            // ADICIONADO: O Saldo do Dia agora aparece em destaque no topo do Menu!
+            System.out.println("\n=======================================");
+            System.out.println("   SALDO ATUAL DO DIA: R$" + saldoDoDia);
+            System.out.println("=======================================");
+            System.out.println("--- GESTÃO DE BINGO A3 ---");
+            System.out.println("1 - Gestão de Clientes (Cadastrar/Consultar/Editar/Excluir)");
+            System.out.println("2 - Venda de Cartelas (Contratação)");
+            System.out.println("3 - Iniciar Rodada de Bingo (Sorteio)");
+            System.out.println("4 - Relatório Financeiro Detalhado");
+            System.out.println("5 - Sair");
+            System.out.print("Opção: ");
+            opcao = sc.nextInt();
+            sc.nextLine();
 
             switch (opcao) {
-                case 1:
-                    System.out.print("Nome: ");
-                    String nome = scanner.nextLine();
-                    System.out.print("CPF: ");
-                    String cpf = scanner.nextLine();
-                    System.out.print("Saldo Inicial (R$): ");
-                    double saldo = scanner.nextDouble();
-                    
-                    listaClientes.add(new Cliente(nome, cpf, saldo));
-                    System.out.println("Cliente cadastrado com sucesso!");
-                    break;
-
-                case 2:
-                    System.out.println("\n--- LISTA DE CLIENTES ---");
-                    if (listaClientes.isEmpty()) {
-                        System.out.println("Nenhum cliente cadastrado.");
-                    } else {
-                        for (Cliente c : listaClientes) {
-                            System.out.println("Nome: " + c.getNome() + " | CPF: " + c.getCpf() + " | Saldo: R$" + c.getSaldo());
-                        }
-                    }
-                    break;
-
-                case 3:
-                    System.out.print("Digite o CPF do cliente que deseja editar: ");
-                    String cpfEditar = scanner.nextLine();
-                    Cliente clienteEditar = buscarCliente(cpfEditar);
-                    
-                    if (clienteEditar != null) {
-                        System.out.print("Novo Nome: ");
-                        clienteEditar.setNome(scanner.nextLine());
-                        System.out.println("Dados atualizados!");
-                    } else {
-                        System.out.println("Cliente nao encontrado.");
-                    }
-                    break;
-
-                case 4:
-                    System.out.print("Digite o CPF do cliente que deseja excluir: ");
-                    String cpfExcluir = scanner.nextLine();
-                    Cliente clienteExcluir = buscarCliente(cpfExcluir);
-                    
-                    if (clienteExcluir != null) {
-                        listaClientes.remove(clienteExcluir);
-                        System.out.println("Cliente removido com sucesso!");
-                    } else {
-                        System.out.println("Cliente nao encontrado.");
-                    }
-                    break;
-
-                case 5:
-                    System.out.print("Digite o CPF do cliente comprador: ");
-                    String cpfComprador = scanner.nextLine();
-                    Cliente comprador = buscarCliente(cpfComprador);
-                    
-                    if (comprador != null) {
-                        CartelaBingo novaCartela = new CartelaBingo(contadorCartela);
-                        
-                        if (comprador.descontarSaldo(novaCartela.getPreco())) {
-                            listaCartelasContratadas.add(novaCartela);
-                            caixaDoBingo += novaCartela.getPreco();
-                            contadorCartela++;
-                            System.out.println("Venda realizada com sucesso!");
-                            novaCartela.exibirCartela();
-                        } else {
-                            System.out.println("Saldo insuficiente! A cartela custa R$" + novaCartela.getPreco());
-                        }
-                    } else {
-                        System.out.println("Cliente nao cadastrado.");
-                    }
-                    break;
-
-                case 6:
-                    System.out.println("\n--- GESTAO FINANCEIRA ---");
-                    System.out.println("Total arrecadado no caixa: R$" + caixaDoBingo);
-                    System.out.println("Quantidade de servicos/cartelas vendidos: " + listaCartelasContratadas.size());
-                    break;
-
-                case 7:
-                    System.out.println("Saindo do sistema...");
-                    break;
-
-                default:
-                    System.out.println("Opcao invalida!");
+                case 1: menuClientes(sc); break;
+                case 2: venderCartela(sc); break;
+                case 3: realizarRodada(); break;
+                case 4: exibirFinanceiro(); break;
             }
-        } while (opcao != 7);
-        
-        scanner.close();
+        } while (opcao != 5);
     }
 
-    private static Cliente buscarCliente(String cpf) {
+    // --- GESTÃO DE CLIENTES (CRUD) ---
+    private static void menuClientes(Scanner sc) {
+        System.out.println("1-Cadastrar | 2-Listar | 3-Editar | 4-Deletar");
+        int sub = sc.nextInt(); sc.nextLine();
+        if (sub == 1) {
+            System.out.print("Nome: "); String n = sc.nextLine();
+            System.out.print("CPF: "); String c = sc.nextLine();
+            listaClientes.add(new Cliente(n, c, 100.0));
+            System.out.println("Cliente cadastrado!");
+        } else if (sub == 2) {
+            for (Cliente c : listaClientes) System.out.println(c.getNome() + " - CPF: " + c.getCpf() + " - Saldo: R$" + c.getSaldo());
+        } else if (sub == 3) {
+            System.out.print("CPF para editar: "); String c = sc.nextLine();
+            for (Cliente cl : listaClientes) if (cl.getCpf().equals(c)) { System.out.print("Novo Nome: "); cl.setNome(sc.nextLine()); }
+        } else if (sub == 4) {
+            System.out.print("CPF para deletar: "); String c = sc.nextLine();
+            listaClientes.removeIf(cl -> cl.getCpf().equals(c));
+        }
+    }
+
+    // --- GESTÃO DE VENDAS ---
+    private static void venderCartela(Scanner sc) {
+        System.out.print("CPF do Cliente: ");
+        String cpf = sc.nextLine();
         for (Cliente c : listaClientes) {
             if (c.getCpf().equals(cpf)) {
-                return c;
+                CartelaBingo nova = new CartelaBingo(cartelasVendidas.size() + 1, cpf);
+                if (c.descontarSaldo(nova.getPreco())) {
+                    cartelasVendidas.add(nova);
+                    totalVendas += nova.getPreco();
+                    saldoDoDia += nova.getPreco(); // Dinheiro entra no saldo do dia
+                    System.out.println("Venda realizada!");
+                    nova.exibir();
+                    return;
+                }
             }
         }
-        return null;
+        System.out.println("Erro na venda. Verifique o CPF ou Saldo.");
+    }
+
+    // --- GESTÃO DE RODADAS ---
+    private static void realizarRodada() {
+        if (cartelasVendidas.isEmpty()) {
+            System.out.println("Sem cartelas vendidas, sem jogo!");
+            return;
+        }
+        Random r = new Random();
+        ArrayList<Integer> sorteados = new ArrayList<>();
+        boolean alguemGanhou = false;
+
+        System.out.println("SORTEANDO NÚMEROS...");
+        while (!alguemGanhou) {
+            int num = r.nextInt(50) + 1;
+            if (!sorteados.contains(num)) {
+                sorteados.add(num);
+                for (CartelaBingo cartela : cartelasVendidas) {
+                    cartela.conferirNumero(num);
+                    if (cartela.completou()) {
+                        System.out.println("\n========================");
+                        System.out.println("BINGO! Ganhador CPF: " + cartela.getDonoCpf());
+                        System.out.println("========================");
+                        pagarPremio(cartela.getDonoCpf());
+                        alguemGanhou = true;
+                        break;
+                    }
+                }
+            }
+        }
+        cartelasVendidas.clear(); 
+    }
+
+    private static void pagarPremio(String cpf) {
+        for (Cliente c : listaClientes) {
+            if (c.getCpf().equals(cpf)) {
+                c.adicionarSaldo(valorPremioRodada);
+                totalPremiosPagos += valorPremioRodada;
+                saldoDoDia -= valorPremioRodada; // O prêmio sai do saldo do dia
+                System.out.println("Prêmio de R$" + valorPremioRodada + " pago ao cliente!");
+            }
+        }
+    }
+
+    // --- GESTÃO FINANCEIRA COMPLETA ---
+    private static void exibirFinanceiro() {
+        System.out.println("\n--- RELATÓRIO FINANCEIRO ACUMULADO ---");
+        System.out.println("Total de Receita Histórica: R$" + totalVendas);
+        System.out.println("Total de Prêmios Pagos Histórico: R$" + totalPremiosPagos);
+        System.out.println("Lucro Líquido Geral: R$" + (totalVendas - totalPremiosPagos));
+        System.out.println("---------------------------------------");
+        System.out.println("SALDO ATUAL DO DIA: R$" + saldoDoDia); 
+        System.out.println("---------------------------------------");
     }
 }

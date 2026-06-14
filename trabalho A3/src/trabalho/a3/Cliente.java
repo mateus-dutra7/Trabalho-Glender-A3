@@ -19,9 +19,7 @@ public class Cliente {
         this.saldo = saldoInicial;
     }
 
-    public void adicionarSaldo(double valor) {
-        this.saldo += valor;
-    }
+    public void adicionarSaldo(double valor) { this.saldo += valor; }
 
     public boolean descontarSaldo(double valor) {
         if (this.saldo >= valor) {
@@ -31,9 +29,9 @@ public class Cliente {
         return false;
     }
 
+    // Getters e Setters
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public String getCpf() { return cpf; }
-    public void setCpf(String cpf) { this.cpf = cpf; }
     public double getSaldo() { return saldo; }
 }
