@@ -30,5 +30,3 @@ Este não é uma entidade de negócio, é o chefe do programa. Ele não guarda d
 
 É ele que atualiza e exibe o Saldo do Dia no topo do ecrã para o gestor saber o lucro atual.
 
-🎙️ Frase de Ouro para a Apresentação:
-"Professor, o sistema foi modelado com duas classes de entidades principais: o Cliente, que encapsula os dados e o saldo do usuário, e a CartelaBingo, que gere os números e as marcações do jogo. A classe TrabalhoA3 funciona puramente como o nosso Main, ou seja, o ponto de entrada e o motor que orquestra estas duas entidades, controlando o fluxo do jogo, os sorteios e o balanço financeiro do dia.
